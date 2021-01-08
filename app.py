@@ -38,11 +38,11 @@ multiple_user_schema = UserSchema(many=True)
 
 class Journal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    person = db.Column(db.String)
-    title = db.Column(db.String)
+    person = db.Column(db.String, nullable=True)
+    title = db.Column(db.String, nullable=True)
     description = db.Column(db.String, nullable=False, unique=True)
     date = db.Column(db.Integer, nullable=False)
-    location = db.Column(db.String)
+    location = db.Column(db.String, nullable=True)
 
     def __init__(self, person, title, description, date, location):
         self.person = person
@@ -67,13 +67,9 @@ def create_user():
     email = post_data.get("email")
     password = post_data.get("password")
 
-    # existingUser = db.session.query(User).filter(User.email == email).first()
-    # if existingUser is not None:
-    #     return jsonify("User already exists")
+    # password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
-    password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
-
-    record = User(email, password_hash)
+    record = User(email, password)
     db.session.add(record)
     db.session.commit()
 
