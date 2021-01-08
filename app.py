@@ -67,9 +67,9 @@ def create_user():
     email = post_data.get("email")
     password = post_data.get("password")
 
-    existingUser = db.session.query(User).filter(User.email == email).first()
-    if existingUser is not None:
-        return jsonify("User already exists")
+    # existingUser = db.session.query(User).filter(User.email == email).first()
+    # if existingUser is not None:
+    #     return jsonify("User already exists")
 
     password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
