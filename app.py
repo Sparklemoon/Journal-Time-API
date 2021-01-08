@@ -41,7 +41,7 @@ class Journal(db.Model):
     person = db.Column(db.String, nullable=True)
     title = db.Column(db.String, nullable=True)
     description = db.Column(db.String, nullable=False, unique=True)
-    date = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.String, nullable=False)
     location = db.Column(db.String, nullable=True)
 
     def __init__(self, person, title, description, date, location):
