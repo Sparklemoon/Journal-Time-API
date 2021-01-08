@@ -77,7 +77,7 @@ def create_user():
 
 @app.route("/journal/add", methods=["POST"])
 def create_journal():
-    if request.content_type !="aplication/json":
+    if request.content_type !="application/json":
         return "YOU NEED JSON!!!"
 
     post_data = request.get_json()
