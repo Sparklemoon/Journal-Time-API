@@ -21,9 +21,9 @@ Heroku(app)
 CORS(app)
 
 class User(db.Model):
-    id = db.Column(db.Integer, primry_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(20), unique=True, nullable=False)
-    password =db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
     def __init__(self, email, password):
         self.email = email
@@ -38,13 +38,13 @@ multiple_user_schema = UserSchema(many=True)
 
 class Journal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    person = db.Column(db.String, nullable=True)
-    title = db.Column(db.String, nullable=True)
+    person = db.Column(db.String)
+    title = db.Column(db.String)
     description = db.Column(db.String, nullable=False, unique=True)
-    date = db.Column(db.String, nullable=False)
-    location = db.Column(db.String, nullable=True)
+    date = db.Column(db.Integer, nullable=False)
+    location = db.Column(db.String)
 
-    def __init__(self, person, title, description, date, location)
+    def __init__(self, person, title, description, date, location):
         self.person = person
         self.title = title
         self.description = description
@@ -56,28 +56,28 @@ class JournalSchema(ma.Schema):
         feilds = ("id", "person", "title", "description", "date", "location")
 
 journal_schema = JournalSchema()
-multiple_journal_schema = JournalSchema(many=True)       
+multiple_journal_schema = JournalSchema(many=True)      
 
 @app.route("/user/add", methods=["POST"])
 def create_user():
-    if request.content_type !="aplication/json":
-        return "YOU NEED JSON!!!"
+    if request.content_type != "application/json":
+        return "ERROR JSON NEED PEW PEW"
 
     post_data = request.get_json()
     email = post_data.get("email")
     password = post_data.get("password")
-
-    record = User(email, password)
-    db.session.add(record)
-    db.session.commit()
-
-    return jsonify("Data added good job")
 
     existingUser = db.session.query(User).filter(User.username == username).first()
     if existingUser is not None:
         return jsonify("User already exists")
 
     password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+
+    record = User(email, password_hash)
+    db.session.add(record)
+    db.session.commit()
+
+    return jsonify("User added good job")
 
 @app.route("/journal/add", methods=["POST"])
 def create_journal():
@@ -86,7 +86,7 @@ def create_journal():
 
     post_data = request.get_json()
     person = post_data.get("person")
-    title = post_data.get{"title"}
+    title = post_data.get("title")
     description = post_data.get("description")
     date = post_data.get("date")
     location = post_data.get("location")
@@ -96,6 +96,24 @@ def create_journal():
     db.session.commit()
 
     return jsonify("Data added successfully")
+
+@app.route("/journal/get/marshmallow", methods=["GET"])
+def get_all_journal_marshmallow():
+    all_journals = db.session.query(Journal).all()
+    return jsonify(multiple_journal_schema.dump(all_books))
+
+@app.route("/journal/get/marshmallow/<id>", methods=["GET"])
+def get_one_journal_marshmallow(id):
+    one_journal_schema ={}
+    one_journal_schema["id"] = one_journal.id
+    one_journal_schema["person"] = one_journal.person
+    one_journal_schema["title"] = one_journal.title
+    one_journal_schema["description"] = one_journal.description
+    one_journal_schema["date"] = one_journal.date
+    one_journal_schema["location"] = one_journal.location
+    
+    return jsonify(journal_schema.dump(one_journal))
+
 
 @app.route("/user/get", methods=["GET"])
 def get_all_users():
@@ -121,15 +139,20 @@ def delete_user_journal_by_id(id):
     if record is None:
         return jsonify("User does not exist")
 
-@app.route("/user/delete/<journal>", methods=["DELETE"])
-def delete_user_journal_by_id(id):
-    record = db.session.query(Journal).filter(User.journal == journal).first()
-    if record is None:
-        return jsonify("Journal does not exist")
+@app.route("/journal/get", methods=["GET"])
+def get_all_journals():
+    all_books = db.session.query(Journal.id, Journal.person, Journal.title, Journal.description, Journal.date, Journal.location).all()
+    return jsonify(all_books)
 
-    db.session.delete(record)
-    db.session.commit()
-    return jsonify("Journal was successfully deleted")
+# @app.route("/user/delete/<journal>", methods=["DELETE"])
+# def delete_user_journal_by_id(id):
+#     record = db.session.query(Journal).filter(User.journal == journal).first()
+#     if record is None:
+#         return jsonify("Journal does not exist")
+
+#     db.session.delete(record)
+#     db.session.commit()
+#     return jsonify("Journal was successfully deleted")
 
 
 

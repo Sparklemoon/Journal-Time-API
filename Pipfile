@@ -15,6 +15,7 @@ flask-heroku = "*"
 gunicorn = "*"
 psycopg2 = "*"
 bcrypt = "*"
+flask-bcrypt = "*"
 
 [requires]
 python_version = "3.9"
